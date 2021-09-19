@@ -2,7 +2,7 @@ package kong
 
 import (
 	"encoding/json"
-	"github.com/lffranca/gonga/pkg/kong/consumer"
+	"github.com/lffranca/gonga/pkg/kong/route"
 	"log"
 	"testing"
 )
@@ -46,15 +46,16 @@ func Test_kong_List(t *testing.T) {
 		return
 	}
 
-	tagName := "apimanagement-via"
+	// tagName := "apimanagement-via"
 
-	item, errItem := gateway.ListAllConsumers(nil, &tagName)
+	item, errItem := gateway.ListAllRoutes(nil, nil)
 	if errItem != nil {
 		t.Error(errItem)
 		return
 	}
 
-	log.Println("item: ", item)
+	jsonResult, _ := json.Marshal(item)
+	log.Println("item: ", string(jsonResult))
 }
 
 func Test_kong_Item(t *testing.T) {
@@ -64,16 +65,15 @@ func Test_kong_Item(t *testing.T) {
 		return
 	}
 
-	itemName := "my-username"
+	itemName := "apione-develop.manager.02"
 
-	item, errItem := gateway.ConsumerByNameOrID(&itemName)
+	item, errItem := gateway.RouteByNameOrID(&itemName)
 	if errItem != nil {
 		t.Error(errItem)
 		return
 	}
 
 	jsonResult, _ := json.Marshal(item)
-
 	log.Println("item: ", string(jsonResult))
 }
 
@@ -84,13 +84,13 @@ func Test_kong_Create(t *testing.T) {
 		return
 	}
 
-	itemToCreate := &consumer.Form{
-		Username: NewString("consumer23"),
-		CustomID: NewString("consumer23"),
-		Tags:     []string{"test1", "test2"},
+	itemToCreate := &route.Form{
+		Name: NewString("route-test"),
+		Paths: []string{"/servicetest01", "/servicetest02"},
+		Service: &route.ItemID{ID: NewString("427163d3-84f2-412f-bbb5-62285fd9646a")},
 	}
 
-	item, errItem := gateway.CreateConsumer(itemToCreate)
+	item, errItem := gateway.CreateRoute(itemToCreate)
 	if errItem != nil {
 		t.Error(errItem)
 		return
@@ -107,13 +107,13 @@ func Test_kong_Update(t *testing.T) {
 		return
 	}
 
-	itemToUpdate := &consumer.Form{
+	itemToUpdate := &route.Form{
 		Tags: []string{"testtest", "test1"},
 	}
 
-	username := "consumer23"
+	username := "route-test"
 
-	item, errItem := gateway.UpsertConsumer(&username, itemToUpdate)
+	item, errItem := gateway.UpsertRoute(&username, itemToUpdate)
 	if errItem != nil {
 		t.Error(errItem)
 		return
@@ -130,9 +130,9 @@ func Test_kong_Delete(t *testing.T) {
 		return
 	}
 
-	serviceName := "consumer23"
+	serviceName := "route-test"
 
-	if err := gateway.DeleteConsumer(&serviceName); err != nil {
+	if err := gateway.DeleteRoute(&serviceName); err != nil {
 		t.Error(err)
 		return
 	}
