@@ -1,7 +1,8 @@
 package kong
 
 import (
-	"github.com/lffranca/gonga/pkg/kong/service"
+	"encoding/json"
+	"github.com/lffranca/gonga/pkg/kong/consumer"
 	"log"
 	"testing"
 )
@@ -45,9 +46,9 @@ func Test_kong_List(t *testing.T) {
 		return
 	}
 
-	tagName := "managed-by-ingress-controller"
+	tagName := "apimanagement-via"
 
-	item, errItem := gateway.ListAllServices(nil, &tagName)
+	item, errItem := gateway.ListAllConsumers(nil, &tagName)
 	if errItem != nil {
 		t.Error(errItem)
 		return
@@ -63,15 +64,17 @@ func Test_kong_Item(t *testing.T) {
 		return
 	}
 
-	itemName := "20bb5f94-2f6d-48b6-ae30-96ca6182ea97"
+	itemName := "my-username"
 
-	item, errItem := gateway.ServiceByNameOrID(&itemName)
+	item, errItem := gateway.ConsumerByNameOrID(&itemName)
 	if errItem != nil {
 		t.Error(errItem)
 		return
 	}
 
-	log.Println("item: ", item)
+	jsonResult, _ := json.Marshal(item)
+
+	log.Println("item: ", string(jsonResult))
 }
 
 func Test_kong_Create(t *testing.T) {
@@ -81,20 +84,20 @@ func Test_kong_Create(t *testing.T) {
 		return
 	}
 
-	itemToCreate  := &service.Form{
-		Name: NewString("service-create-from-gonga"),
-		Protocol: NewString("http"),
-		Host: NewString("localhost"),
-		Port: NewInt(80),
+	itemToCreate := &consumer.Form{
+		Username: NewString("consumer23"),
+		CustomID: NewString("consumer23"),
+		Tags:     []string{"test1", "test2"},
 	}
 
-	item, errItem := gateway.CreateService(itemToCreate)
+	item, errItem := gateway.CreateConsumer(itemToCreate)
 	if errItem != nil {
 		t.Error(errItem)
 		return
 	}
 
-	log.Println("item: ", item)
+	jsonResult, _ := json.Marshal(item)
+	log.Println("item: ", string(jsonResult))
 }
 
 func Test_kong_Update(t *testing.T) {
@@ -104,19 +107,20 @@ func Test_kong_Update(t *testing.T) {
 		return
 	}
 
-	itemToCreate  := &service.Form{
-		Protocol: NewString("http"),
+	itemToUpdate := &consumer.Form{
+		Tags: []string{"testtest", "test1"},
 	}
 
-	serviceName := "service-create-from-gonga"
+	username := "consumer23"
 
-	item, errItem := gateway.UpsertService(&serviceName, itemToCreate)
+	item, errItem := gateway.UpsertConsumer(&username, itemToUpdate)
 	if errItem != nil {
 		t.Error(errItem)
 		return
 	}
 
-	log.Println("item: ", item)
+	jsonResult, _ := json.Marshal(item)
+	log.Println("item: ", string(jsonResult))
 }
 
 func Test_kong_Delete(t *testing.T) {
@@ -126,14 +130,12 @@ func Test_kong_Delete(t *testing.T) {
 		return
 	}
 
-	serviceName := "service-create-from-gonga"
+	serviceName := "consumer23"
 
-	if err := gateway.DeleteService(&serviceName); err != nil {
+	if err := gateway.DeleteConsumer(&serviceName); err != nil {
 		t.Error(err)
 		return
 	}
 
 	log.Println("deleted item: ", serviceName)
 }
-
-
