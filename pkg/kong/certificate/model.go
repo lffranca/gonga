@@ -3,8 +3,8 @@ package certificate
 const URL = "certificates"
 
 type Response struct {
-	Next interface{}   `json:"next"`
-	Data []Certificate `json:"data"`
+	Offset *string       `json:"offset,omitempty"`
+	Data   []Certificate `json:"data,omitempty"`
 }
 
 type ItemID struct {
