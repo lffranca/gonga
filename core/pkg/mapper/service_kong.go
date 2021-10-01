@@ -2,7 +2,7 @@ package mapper
 
 import (
 	"github.com/kong/go-kong/kong"
-	"github.com/lffranca/gonga/internal/entity"
+	"github.com/lffranca/gonga/core/entity"
 )
 
 func ServicesKongToEntity(items []*kong.Service) []entity.Service {

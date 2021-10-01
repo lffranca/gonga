@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	"github.com/lffranca/gonga/internal/entity"
+	"github.com/lffranca/gonga/core/entity"
 	"reflect"
 	"testing"
 )

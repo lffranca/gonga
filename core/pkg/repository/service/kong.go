@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 	"github.com/kong/go-kong/kong"
-	"github.com/lffranca/gonga/internal/entity"
-	"github.com/lffranca/gonga/pkg/mapper"
+	"github.com/lffranca/gonga/core/entity"
+	"github.com/lffranca/gonga/core/pkg/mapper"
 )
 
 func NewKongRepository(client *kong.Client) (*kongRepository, error) {
