@@ -7,6 +7,10 @@ import (
 	"testing"
 )
 
+func str(s string) *string {
+	return &s
+}
+
 func Test_service_List(t *testing.T) {
 	mock := &dataMock{}
 	ctx := context.Background()
@@ -37,12 +41,12 @@ func Test_service_List(t *testing.T) {
 			},
 			want: []entity.Service{
 				{
-					ID:   "1",
-					Name: "Name 1",
+					ID:   str("1"),
+					Name: str("Name 1"),
 				},
 				{
-					ID:   "2",
-					Name: "Name 2",
+					ID:   str("2"),
+					Name: str("Name 2"),
 				},
 			},
 		},
@@ -69,12 +73,12 @@ type dataMock struct{}
 func (mod *dataMock) List(ctx context.Context, offset, limit *int, search, sort *string) ([]entity.Service, error) {
 	return []entity.Service{
 		{
-			ID:   "1",
-			Name: "Name 1",
+			ID:   str("1"),
+			Name: str("Name 1"),
 		},
 		{
-			ID:   "2",
-			Name: "Name 2",
+			ID:   str("2"),
+			Name: str("Name 2"),
 		},
 	}, nil
 }
