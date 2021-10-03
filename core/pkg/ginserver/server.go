@@ -1,13 +1,21 @@
 package ginserver
 
 import (
-	"log"
-
 	"github.com/gin-gonic/gin"
+	"html/template"
+	"log"
 )
 
-func NewGinServer() *ginServer {
+func NewGinServer(temp *template.Template, staticRoutes map[string]string) *ginServer {
 	r := gin.Default()
+
+	if temp != nil {
+		r.SetHTMLTemplate(temp)
+	}
+
+	for route, path := range staticRoutes {
+		r.Static(route, path)
+	}
 
 	return &ginServer{
 		engine: r,
