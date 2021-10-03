@@ -21,10 +21,14 @@ func main() {
 
 	r.Static("/js", os.Getenv("STATIC_JS_PATH"))
 
-	r.GET("/", func(c *gin.Context) {
+	r.GET("/app/*any", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "service/index.tpl", gin.H{
 			"content": "Service",
 		})
+	})
+
+	r.GET("/", func(c *gin.Context) {
+		c.Redirect(http.StatusPermanentRedirect, "/app")
 	})
 
 	if err := r.Run(fmt.Sprintf(":%s", os.Getenv("API_PORT"))); err != nil {

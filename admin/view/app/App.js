@@ -1,10 +1,14 @@
 import React from 'react'
+import Base from "./components/Base";
+import CssBaseline from "@mui/material/CssBaseline";
+import State from "./state/State";
 
 function App() {
     return (
-        <div>
-            APP REACT 3
-        </div>
+        <State>
+            <CssBaseline/>
+            <Base/>
+        </State>
     );
 }
 
