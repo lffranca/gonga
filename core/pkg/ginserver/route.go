@@ -2,7 +2,7 @@ package ginserver
 
 import "context"
 
-type Controller interface {
+type Route interface {
 	GetBindQuery() interface{}
 	GetBindHeader() interface{}
 	GetBindBody() interface{}

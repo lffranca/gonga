@@ -26,18 +26,24 @@ type ginServer struct {
 	engine *gin.Engine
 }
 
-func (server *ginServer) AddController(controller Controller) {
-	switch controller.GetMethod() {
+func (server *ginServer) AddRoute(route Route) {
+	switch route.GetMethod() {
 	case "GET":
-		server.engine.GET(controller.GetRoutePath(), handler(controller))
+		server.engine.GET(route.GetRoutePath(), handler(route))
 	case "POST":
-		server.engine.POST(controller.GetRoutePath(), handler(controller))
+		server.engine.POST(route.GetRoutePath(), handler(route))
 	case "PUT":
-		server.engine.PUT(controller.GetRoutePath(), handler(controller))
+		server.engine.PUT(route.GetRoutePath(), handler(route))
 	case "DELETE":
-		server.engine.DELETE(controller.GetRoutePath(), handler(controller))
+		server.engine.DELETE(route.GetRoutePath(), handler(route))
 	default:
-		log.Printf("invalid method: %s - %s", controller.GetMethod(), controller.GetRoutePath())
+		log.Printf("invalid method: %s - %s", route.GetMethod(), route.GetRoutePath())
+	}
+}
+
+func (server *ginServer) AddRoutes(routes []Route) {
+	for _, route := range routes {
+		server.AddRoute(route)
 	}
 }
 

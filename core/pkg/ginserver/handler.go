@@ -7,9 +7,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func handler(controller Controller) gin.HandlerFunc {
+func handler(route Route) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		queryData := controller.GetBindQuery()
+		queryData := route.GetBindQuery()
 		if queryData != nil {
 			if err := c.ShouldBindQuery(queryData); err != nil {
 				log.Printf("[ERROR] %v\n", err)
@@ -19,7 +19,7 @@ func handler(controller Controller) gin.HandlerFunc {
 			}
 		}
 
-		headerData := controller.GetBindHeader()
+		headerData := route.GetBindHeader()
 		if headerData != nil {
 			if err := c.ShouldBindHeader(headerData); err != nil {
 				log.Printf("[ERROR] %v\n", err)
@@ -29,7 +29,7 @@ func handler(controller Controller) gin.HandlerFunc {
 			}
 		}
 
-		bodyData := controller.GetBindBody()
+		bodyData := route.GetBindBody()
 		if bodyData != nil {
 			if err := c.ShouldBindJSON(bodyData); err != nil {
 				log.Printf("[ERROR] %v\n", err)
@@ -39,7 +39,7 @@ func handler(controller Controller) gin.HandlerFunc {
 			}
 		}
 
-		response, contentType, errResponse := controller.Handler(c.Request.Context())
+		response, contentType, errResponse := route.Handler(c.Request.Context())
 		if errResponse != nil {
 			log.Printf("[ERROR] %v\n", errResponse)
 			c.JSON(http.StatusBadRequest, "Invalid request")
