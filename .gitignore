@@ -22,4 +22,5 @@
 
 # react app
 dist/
+node_modules/
 
