@@ -9,6 +9,12 @@ import (
 
 func handler(route Route) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		redirect := route.GetRedirect()
+		if redirect != nil {
+			c.Redirect(http.StatusPermanentRedirect, *redirect)
+			return
+		}
+
 		queryData := route.GetBindQuery()
 		if queryData != nil {
 			if err := c.ShouldBindQuery(queryData); err != nil {
