@@ -3,12 +3,14 @@ module github.com/lffranca/gonga/admin
 go 1.17
 
 require (
-	github.com/gin-gonic/gin v1.7.4
 	github.com/joho/godotenv v1.4.0
+	github.com/lffranca/gonga/core/pkg/ginserver v0.0.0-20211004023523-ca0862199ca6
+	github.com/lffranca/gonga/core/pkg/model v0.0.0-20211004012037-a7ee2891b3b8
 )
 
 require (
 	github.com/gin-contrib/sse v0.1.0 // indirect
+	github.com/gin-gonic/gin v1.7.4 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/go-playground/validator/v10 v10.9.0 // indirect
@@ -20,7 +22,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/ugorji/go/codec v1.2.6 // indirect
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect
-	golang.org/x/sys v0.0.0-20211002104244-808efd93c36d // indirect
+	golang.org/x/sys v0.0.0-20211003122950-b1ebd4e1001c // indirect
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
