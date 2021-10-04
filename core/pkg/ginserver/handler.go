@@ -45,12 +45,17 @@ func handler(route Route) gin.HandlerFunc {
 			}
 		}
 
-		resp, contentType, errResponse := route.Handler(c.Request.Context())
-		if errResponse != nil {
-			log.Printf("[ERROR] %v\n", errResponse)
-			c.JSON(http.StatusBadRequest, "Invalid request")
-			c.Abort()
-			return
+		var resp interface{}
+		var contentType *string
+		if route.Handler != nil {
+			var err error
+			resp, contentType, err = route.Handler(c.Request.Context())
+			if err != nil {
+				log.Printf("[ERROR] %v\n", err)
+				c.JSON(http.StatusBadRequest, "Invalid request")
+				c.Abort()
+				return
+			}
 		}
 
 		temp := route.GetTemplate()
