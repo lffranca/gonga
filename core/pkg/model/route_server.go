@@ -9,6 +9,7 @@ type RouteServer struct {
 	Path        string
 	Method      string
 	Template    *string
+	Redirect    *string
 	HandlerFunc func(ctx context.Context) (body interface{}, contentType *string, err error)
 }
 
@@ -34,6 +35,10 @@ func (route *RouteServer) GetMethod() string {
 
 func (route *RouteServer) GetTemplate() *string {
 	return route.Template
+}
+
+func (route *RouteServer) GetRedirect() *string {
+	return route.Redirect
 }
 
 func (route *RouteServer) Handler(ctx context.Context) (body interface{}, contentType *string, err error) {
