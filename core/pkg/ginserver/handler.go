@@ -1,10 +1,10 @@
 package ginserver
 
 import (
+	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
-
-	"github.com/gin-gonic/gin"
+	"reflect"
 )
 
 func handler(route Route) gin.HandlerFunc {
@@ -47,7 +47,7 @@ func handler(route Route) gin.HandlerFunc {
 
 		var resp interface{}
 		var contentType *string
-		if route.Handler != nil {
+		if !reflect.ValueOf(route.Handler).IsValid() {
 			var err error
 			resp, contentType, err = route.Handler(c.Request.Context())
 			if err != nil {
