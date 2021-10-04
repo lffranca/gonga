@@ -6,7 +6,8 @@ type Route interface {
 	GetBindQuery() interface{}
 	GetBindHeader() interface{}
 	GetBindBody() interface{}
+	GetTemplate() *string
 	GetRoutePath() string
 	GetMethod() string
-	Handler(ctx context.Context) (body []byte, contentType *string, err error)
+	Handler(ctx context.Context) (body interface{}, contentType *string, err error)
 }

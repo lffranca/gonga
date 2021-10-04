@@ -39,9 +39,23 @@ func handler(route Route) gin.HandlerFunc {
 			}
 		}
 
-		response, contentType, errResponse := route.Handler(c.Request.Context())
+		resp, contentType, errResponse := route.Handler(c.Request.Context())
 		if errResponse != nil {
 			log.Printf("[ERROR] %v\n", errResponse)
+			c.JSON(http.StatusBadRequest, "Invalid request")
+			c.Abort()
+			return
+		}
+
+		temp := route.GetTemplate()
+		if temp != nil {
+			c.HTML(http.StatusOK, *temp, resp)
+			return
+		}
+
+		response, ok := resp.([]byte)
+		if !ok {
+			log.Println("[ERROR] Response is invalid []byte")
 			c.JSON(http.StatusBadRequest, "Invalid request")
 			c.Abort()
 			return
