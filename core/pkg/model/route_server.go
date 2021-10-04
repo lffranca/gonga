@@ -8,7 +8,8 @@ type RouteServer struct {
 	Body        interface{}
 	Path        string
 	Method      string
-	HandlerFunc func(ctx context.Context) (body []byte, contentType *string, err error)
+	Template    *string
+	HandlerFunc func(ctx context.Context) (body interface{}, contentType *string, err error)
 }
 
 func (route *RouteServer) GetBindQuery() interface{} {
@@ -31,6 +32,10 @@ func (route *RouteServer) GetMethod() string {
 	return route.Method
 }
 
-func (route *RouteServer) Handler(ctx context.Context) (body []byte, contentType *string, err error) {
+func (route *RouteServer) GetTemplate() *string {
+	return route.Template
+}
+
+func (route *RouteServer) Handler(ctx context.Context) (body interface{}, contentType *string, err error) {
 	return route.HandlerFunc(ctx)
 }
