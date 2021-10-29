@@ -2,6 +2,22 @@ package presenter
 
 import "github.com/lffranca/gonga/domain"
 
+func GatewaysFromEntities(items []*domain.Gateway) (values []*GatewayBody) {
+	for _, item := range items {
+		values = append(values, GatewayFromEntity(item))
+	}
+
+	return
+}
+
+func GatewaysToEntities(items []*GatewayBody) (values []*domain.Gateway) {
+	for _, item := range items {
+		values = append(values, item.Entity())
+	}
+
+	return
+}
+
 func GatewayFromEntity(item *domain.Gateway) *GatewayBody {
 	return &GatewayBody{
 		ID:   item.ID,

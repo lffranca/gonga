@@ -10,6 +10,31 @@ import (
 
 type GatewayService service
 
+func (pkg *GatewayService) List(ctx context.Context) ([]*domain.Gateway, error) {
+	client, db, err := pkg.Client.Database(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	defer func() {
+		if err := client.Disconnect(ctx); err != nil {
+			panic(err)
+		}
+	}()
+
+	cursor, err := db.Collection(collectionGateway).Find(ctx, bson.M{})
+	if err != nil {
+		return nil, err
+	}
+
+	var items []*model.Gateway
+	if err = cursor.All(ctx, &items); err != nil {
+		return nil, err
+	}
+
+	return model.GatewayModelsToEntities(items), nil
+}
+
 func (pkg *GatewayService) Get(ctx context.Context, id *string) (*domain.Gateway, error) {
 	client, db, err := pkg.Client.Database(ctx)
 	if err != nil {

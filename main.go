@@ -29,6 +29,8 @@ func init() {
 	for _, envVar := range []string{
 		"API_PORT",
 		"MONGO_URI",
+		"TEMPLATE_PATH",
+		"STATIC_JS_PATH",
 	} {
 		if _, ok := os.LookupEnv(envVar); !ok {
 			log.Panicf("Required enviroment variable not set: %s\n", envVar)

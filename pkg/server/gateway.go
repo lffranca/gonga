@@ -10,6 +10,16 @@ import (
 
 type gatewayRoute service
 
+func (server gatewayRoute) listGET(c *gin.Context) {
+	items, err := server.Server.gatewayDatabase.List(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, presenter.GatewaysFromEntities(items))
+}
+
 func (server gatewayRoute) getGET(c *gin.Context) {
 	var gatewayURI presenter.GatewayURI
 	if err := c.ShouldBindUri(&gatewayURI); err != nil {
@@ -73,5 +83,10 @@ func (server gatewayRoute) activateGET(c *gin.Context) {
 }
 
 func (server gatewayRoute) disableGET(c *gin.Context) {
+	server.Server.proxyMutex.Lock()
+	defer server.Server.proxyMutex.Unlock()
 
+	server.Server.proxy = nil
+
+	c.JSON(http.StatusOK, gin.H{"message": "OK"})
 }
