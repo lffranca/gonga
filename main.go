@@ -15,7 +15,9 @@ func main() {
 		log.Panicln(err)
 	}
 
-	app, err := server.New(db.Gateway)
+	templatePath := os.Getenv("TEMPLATE_PATH")
+	staticJSPath := os.Getenv("STATIC_JS_PATH")
+	app, err := server.New(&templatePath, &staticJSPath, db.Gateway)
 	if err != nil {
 		log.Panicln(err)
 	}

@@ -6,6 +6,7 @@ import (
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 	"github.com/lffranca/gonga/pkg/gkong"
+	"github.com/lffranca/gonga/pkg/server/function"
 	"html/template"
 	"sync"
 )
@@ -23,16 +24,19 @@ func New(templatePath *string, staticJSPath *string, gatewayDatabase GatewayData
 	server.common.Server = server
 	server.staticJSPath = staticJSPath
 	server.proxyMutex = &sync.RWMutex{}
+	server.root = (*rootRoute)(&server.common)
+	server.frontend = (*frontendRoute)(&server.common)
 	server.service = (*serviceRoute)(&server.common)
 	server.gateway = (*gatewayRoute)(&server.common)
 	server.gatewayDatabase = gatewayDatabase
 
 	server.app = gin.Default()
 
+	server.app.Static("/js", *staticJSPath)
+
 	temp := template.Must(
 		template.New("").
-			//Funcs(util.NewTemplateFunc()).
-			//ParseGlob("view/template/**/*.tpl"))
+			Funcs(function.New()).
 			ParseGlob(*templatePath))
 
 	server.app.SetHTMLTemplate(temp)
@@ -52,6 +56,8 @@ type Server struct {
 	app             *gin.Engine
 	proxyMutex      *sync.RWMutex
 	proxy           *gkong.Client
+	root            *rootRoute
+	frontend        *frontendRoute
 	service         *serviceRoute
 	gateway         *gatewayRoute
 	gatewayDatabase GatewayDatabase
@@ -62,7 +68,12 @@ func (pkg *Server) Run(addr ...string) error {
 }
 
 func (pkg *Server) routes() {
-	// TODO Routes to app
+	pkg.app.GET("", pkg.root.redirectToPathGET("/app"))
+
+	app := pkg.app.Group("/app")
+	{
+		app.GET("", pkg.frontend.indexGET)
+	}
 
 	v1 := pkg.app.Group("/api/v1")
 	{
