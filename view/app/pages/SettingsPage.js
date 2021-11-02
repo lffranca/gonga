@@ -3,7 +3,20 @@ import BasePage from "./BasePage";
 
 function SettingsPage() {
     return (
-        <BasePage>
+        <BasePage
+            isList={false}
+            breadcrumbs={[
+                {
+                    name: "Dashboard",
+                    to: "/"
+                },
+                {
+                    name: "Settings",
+                }
+            ]}
+            title="Settings"
+            subtitle="Settings."
+        >
             <div>SettingsPage</div>
         </BasePage>
     )

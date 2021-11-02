@@ -4,7 +4,16 @@ import BasePage from "./BasePage";
 
 function DashboardPage() {
     return (
-        <BasePage>
+        <BasePage
+            isList={false}
+            breadcrumbs={[
+                {
+                    name: "Dashboard"
+                }
+            ]}
+            title="Overview"
+            subtitle="All details of the nodes."
+        >
             <Overview/>
         </BasePage>
     )

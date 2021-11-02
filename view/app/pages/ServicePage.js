@@ -1,12 +1,6 @@
-import React from 'react'
+import React, {useState} from 'react'
 import BasePage from "./BasePage";
-import {Breadcrumbs, Pagination, Paper, TextField, Typography} from "@mui/material";
-import ItemLink from "../components/ItemLink";
-import {styled} from "@mui/material/styles";
 import TableBase from "../components/TableBase";
-import Button from "@mui/material/Button";
-import SearchIcon from '@mui/icons-material/Search';
-import Box from "@mui/material/Box";
 
 const rows = [
     {
@@ -157,54 +151,34 @@ const rows = [
 ]
 
 function ServicePage() {
+    const [results, setResults] = useState(25)
+
     return (
-        <BasePage>
-            <Breadcrumbs aria-label="breadcrumb">
-                <ItemLink underline="hover" color="inherit" to="/">
-                    Dashboard
-                </ItemLink>
-                <Typography color="text.primary">Services</Typography>
-            </Breadcrumbs>
-            <br/>
-            <HeaderPage>
-                <Typography variant="h4">Services</Typography>
-                <br/>
-                <Typography variant="body1">
-                    Service entities, as the name implies, are abstractions of each of your own upstream services.
-                    Examples of Services would be a data transformation microservice, a billing API, etc.
-                </Typography>
-            </HeaderPage>
-            <br/>
-            <ButtonsContainer>
-                <Button variant="contained">Add New Service</Button>
-                <div style={{"flex": 1}}/>
-                <Box sx={{display: 'flex', alignItems: 'flex-end'}}>
-                    <SearchIcon sx={{color: 'action.active', mr: 1, my: 0.5}}/>
-                    <TextField id="input-search-services" label="search..." variant="standard"/>
-                </Box>
-            </ButtonsContainer>
-            <br/>
+        <BasePage
+            isList={true}
+            breadcrumbs={[
+                {
+                    name: "Dashboard",
+                    to: "/"
+                },
+                {
+                    name: "Services"
+                }
+            ]}
+            title="Services"
+            subtitle="Service entities, as the name implies, are abstractions of each of your own upstream services.
+            Examples of Services would be a data transformation microservice, a billing API, etc."
+            results={results}
+            setResults={setResults}
+        >
             <TableBase rows={rows.map(({name, host, tags, created_at}) => ({
                 "Name": name,
                 "Host": host,
                 "Tags": tags.join(", "),
                 "Created At": created_at,
             }))}/>
-            <br/>
-            <ButtonsContainer>
-                <div style={{"flex": 1}}/>
-                <Pagination count={10}/>
-            </ButtonsContainer>
         </BasePage>
     )
 }
-
-const ButtonsContainer = styled("div")(({theme}) => ({
-    display: "flex",
-}))
-
-const HeaderPage = styled(Paper)(({theme}) => ({
-    padding: theme.spacing(2),
-}))
 
 export default ServicePage
