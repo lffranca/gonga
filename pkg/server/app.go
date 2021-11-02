@@ -70,7 +70,7 @@ func (pkg *Server) Run(addr ...string) error {
 func (pkg *Server) routes() {
 	pkg.app.GET("", pkg.root.redirectToPathGET("/app"))
 
-	app := pkg.app.Group("/app")
+	app := pkg.app.Group("/app/*any")
 	{
 		app.GET("", pkg.frontend.indexGET)
 	}
