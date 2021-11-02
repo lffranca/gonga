@@ -45,7 +45,9 @@ function BasePage({children, isList, breadcrumbs, title, subtitle, results, setR
                         }
 
                         return (
-                            <Typography color="text.primary">
+                            <Typography
+                                key={`breadcrumbs-${index}`}
+                                color="text.primary">
                                 {item.name}
                             </Typography>
                         )
@@ -77,6 +79,7 @@ function BasePage({children, isList, breadcrumbs, title, subtitle, results, setR
                                 label="Results"
                                 onChange={handleChangeResults}
                             >
+                                <MenuItem value={5}>5</MenuItem>
                                 <MenuItem value={10}>10</MenuItem>
                                 <MenuItem value={25}>25</MenuItem>
                                 <MenuItem value={50}>50</MenuItem>

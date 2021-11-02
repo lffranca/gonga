@@ -5,6 +5,7 @@ import (
 	"github.com/lffranca/gonga/pkg/server/presenter"
 	"log"
 	"net/http"
+	"time"
 )
 
 type serviceRoute service
@@ -17,6 +18,8 @@ func (server *serviceRoute) listGET(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "proxy is not selected"})
 		return
 	}
+
+	time.Sleep(time.Second * 3)
 
 	var optionQuery presenter.OptionQuery
 	if err := c.ShouldBindQuery(&optionQuery); err != nil {
