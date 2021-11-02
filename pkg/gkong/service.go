@@ -66,16 +66,31 @@ func (pkg *ServiceService) Delete(ctx context.Context, nameOrID *string) error {
 }
 
 // List fetches a list of Services in Kong.
-func (pkg *ServiceService) List(ctx context.Context, tags []*string, matchAllTags bool) ([]*domain.Service, error) {
-	items, _, err := pkg.client.kong.Services.List(ctx, &kong.ListOpt{
-		Tags:         tags,
-		MatchAllTags: matchAllTags,
-	})
-	if err != nil {
-		return nil, err
+func (pkg *ServiceService) List(ctx context.Context, size *int, offset *string, tags []*string, matchAllTags *bool) ([]*domain.Service, *domain.Option, error) {
+	options := &kong.ListOpt{}
+
+	if size != nil {
+		options.Size = *size
 	}
 
-	return mapper.ServiceModelsToEntities(items), nil
+	if offset != nil {
+		options.Offset = *offset
+	}
+
+	if tags != nil && len(tags) > 0 {
+		options.Tags = tags
+	}
+
+	if matchAllTags != nil {
+		options.MatchAllTags = *matchAllTags
+	}
+
+	items, resultOption, err := pkg.client.kong.Services.List(ctx, options)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return mapper.ServiceModelsToEntities(items), mapper.OptionModelToEntity(resultOption), nil
 }
 
 // ListAll fetches all Services in Kong.
