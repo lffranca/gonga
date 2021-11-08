@@ -5,10 +5,8 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
-	"github.com/lffranca/gonga/pkg/gkong"
 	"github.com/lffranca/gonga/pkg/server/function"
 	"html/template"
-	"sync"
 )
 
 func New(templatePath *string, staticJSPath *string, gatewayDatabase GatewayDatabase) (*Server, error) {
@@ -23,11 +21,11 @@ func New(templatePath *string, staticJSPath *string, gatewayDatabase GatewayData
 	server := new(Server)
 	server.common.Server = server
 	server.staticJSPath = staticJSPath
-	server.proxyMutex = &sync.RWMutex{}
-	server.root = (*rootRoute)(&server.common)
-	server.frontend = (*frontendRoute)(&server.common)
-	server.service = (*serviceRoute)(&server.common)
-	server.gateway = (*gatewayRoute)(&server.common)
+	server.root = (*RootService)(&server.common)
+	server.frontend = (*FrontendService)(&server.common)
+	server.service = (*ServiceService)(&server.common)
+	server.gateway = (*GatewayService)(&server.common)
+	server.proxyMiddleware = (*ProxyMiddleware)(&server.common)
 	server.gatewayDatabase = gatewayDatabase
 
 	server.app = gin.Default()
@@ -54,12 +52,11 @@ type Server struct {
 	common          service
 	staticJSPath    *string
 	app             *gin.Engine
-	proxyMutex      *sync.RWMutex
-	proxy           *gkong.Client
-	root            *rootRoute
-	frontend        *frontendRoute
-	service         *serviceRoute
-	gateway         *gatewayRoute
+	root            *RootService
+	frontend        *FrontendService
+	service         *ServiceService
+	gateway         *GatewayService
+	proxyMiddleware *ProxyMiddleware
 	gatewayDatabase GatewayDatabase
 }
 
@@ -92,14 +89,15 @@ func (pkg *Server) routes() {
 			gatewayRoute.POST("", pkg.gateway.createPOST)
 			gatewayRoute.GET("", pkg.gateway.listGET)
 			gatewayRoute.GET("/:gateway", pkg.gateway.getGET)
-			gatewayRoute.GET("/activate/:gateway", pkg.gateway.activateGET)
-			gatewayRoute.GET("/disable/:gateway", pkg.gateway.disableGET)
 		}
 
-		serviceRoute := v1.Group("/service")
+		proxyRequired := v1.Group("", pkg.proxyMiddleware.validate)
 		{
-			serviceRoute.GET("/", pkg.service.listGET)
-			serviceRoute.GET("/all", pkg.service.listAllGET)
+			serviceRoute := proxyRequired.Group("/service")
+			{
+				serviceRoute.GET("/", pkg.service.listGET)
+				serviceRoute.GET("/all", pkg.service.listAllGET)
+			}
 		}
 	}
 }

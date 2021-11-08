@@ -5,8 +5,8 @@ import (
 	"net/http"
 )
 
-type frontendRoute service
+type FrontendService service
 
-func (pkg *frontendRoute) indexGET(c *gin.Context) {
+func (pkg *FrontendService) indexGET(c *gin.Context) {
 	c.HTML(http.StatusOK, "service/index.tpl", gin.H{})
 }

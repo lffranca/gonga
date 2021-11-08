@@ -2,31 +2,23 @@ package server
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/lffranca/gonga/pkg/gkong"
 	"github.com/lffranca/gonga/pkg/server/presenter"
 	"log"
 	"net/http"
-	"time"
 )
 
-type serviceRoute service
+type ServiceService service
 
-func (server *serviceRoute) listGET(c *gin.Context) {
-	server.Server.proxyMutex.RLock()
-	defer server.Server.proxyMutex.RUnlock()
-
-	if server.Server.proxy == nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "proxy is not selected"})
-		return
-	}
-
-	time.Sleep(time.Second * 3)
+func (server *ServiceService) listGET(c *gin.Context) {
+	proxy := c.MustGet("proxy").(*gkong.Client)
 
 	var optionQuery presenter.OptionQuery
 	if err := c.ShouldBindQuery(&optionQuery); err != nil {
 		log.Println("[WARNING] c.ShouldBindQuery(&optionQuery): ", err)
 	}
 
-	items, options, err := server.Server.proxy.Service.List(
+	items, options, err := proxy.Service.List(
 		c.Request.Context(),
 		optionQuery.Size,
 		optionQuery.Offset,
@@ -44,16 +36,10 @@ func (server *serviceRoute) listGET(c *gin.Context) {
 	})
 }
 
-func (server *serviceRoute) listAllGET(c *gin.Context) {
-	server.Server.proxyMutex.RLock()
-	defer server.Server.proxyMutex.RUnlock()
+func (server *ServiceService) listAllGET(c *gin.Context) {
+	proxy := c.MustGet("proxy").(*gkong.Client)
 
-	if server.Server.proxy == nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "proxy is not selected"})
-		return
-	}
-
-	items, err := server.Server.proxy.Service.ListAll(c.Request.Context())
+	items, err := proxy.Service.ListAll(c.Request.Context())
 	if err != nil {
 		log.Println("server.Server.proxy.Service.ListAll: ", err)
 		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})

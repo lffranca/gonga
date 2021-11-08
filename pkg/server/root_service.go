@@ -5,9 +5,9 @@ import (
 	"net/http"
 )
 
-type rootRoute service
+type RootService service
 
-func (pkg *rootRoute) redirectToPathGET(path string) gin.HandlerFunc {
+func (pkg *RootService) redirectToPathGET(path string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Redirect(http.StatusPermanentRedirect, path)
 	}
