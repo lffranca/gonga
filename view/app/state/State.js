@@ -2,6 +2,7 @@ import React from 'react'
 import {createTheme, ThemeProvider} from "@mui/material";
 import AuthContextProvider from "./AuthContext";
 import SidebarContextProvider from "./SidebarContext";
+import GatewayContextProvider from "./GatewayContext";
 
 const mdTheme = createTheme();
 
@@ -10,7 +11,9 @@ function State(props) {
         <ThemeProvider theme={mdTheme}>
             <AuthContextProvider>
                 <SidebarContextProvider>
-                    {props.children}
+                    <GatewayContextProvider>
+                        {props.children}
+                    </GatewayContextProvider>
                 </SidebarContextProvider>
             </AuthContextProvider>
         </ThemeProvider>

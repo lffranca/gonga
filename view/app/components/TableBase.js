@@ -10,14 +10,17 @@ import {
     TableHead,
     TableRow
 } from "@mui/material";
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {listItems} from "../providers/list";
 import TableSkeleton from "./TableSkeleton";
 import PropTypes from "prop-types";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
+import {GatewayContext} from "../state/GatewayContext";
 
 function TableBase({entity, results, tableHeadComponent, tableItemsMap}) {
+    const {gateway} = useContext(GatewayContext)
+
     const [items, setItems] = useState([])
     const [offset, setOffset] = useState("")
     const [loading, setLoading] = useState(true)
@@ -32,7 +35,8 @@ function TableBase({entity, results, tableHeadComponent, tableItemsMap}) {
         }
 
         try {
-            const {data, options} = await listItems(entity, results, offsetParam)
+            const id = gateway && gateway.id ? gateway.id : ""
+            const {data, options} = await listItems(entity, id, results, offsetParam)
             if (offsetParam === "") {
                 setItems(data)
             } else {

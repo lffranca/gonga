@@ -16,7 +16,9 @@ func (server GatewayService) listGET(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, presenter.GatewaysFromEntities(items))
+	c.JSON(http.StatusOK, gin.H{
+		"data": presenter.GatewaysFromEntities(items),
+	})
 }
 
 func (server GatewayService) getGET(c *gin.Context) {
