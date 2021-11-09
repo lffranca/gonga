@@ -9,12 +9,12 @@ import (
 	"html/template"
 )
 
-func New(templatePath *string, staticJSPath *string, gatewayDatabase GatewayDatabase) (*Server, error) {
+func New(templatePath *string, staticJSPath *string, gatewayRepository GatewayRepository) (*Server, error) {
 	if templatePath == nil || staticJSPath == nil {
 		return nil, errors.New("required parameters not passed")
 	}
 
-	if gatewayDatabase == nil {
+	if gatewayRepository == nil {
 		return nil, errors.New("gateway database is required")
 	}
 
@@ -25,8 +25,9 @@ func New(templatePath *string, staticJSPath *string, gatewayDatabase GatewayData
 	server.frontend = (*FrontendService)(&server.common)
 	server.service = (*ServiceService)(&server.common)
 	server.gateway = (*GatewayService)(&server.common)
+	server.route = (*RouteService)(&server.common)
 	server.proxyMiddleware = (*ProxyMiddleware)(&server.common)
-	server.gatewayDatabase = gatewayDatabase
+	server.gatewayRepository = gatewayRepository
 
 	server.app = gin.Default()
 
@@ -49,15 +50,16 @@ type service struct {
 }
 
 type Server struct {
-	common          service
-	staticJSPath    *string
-	app             *gin.Engine
-	root            *RootService
-	frontend        *FrontendService
-	service         *ServiceService
-	gateway         *GatewayService
-	proxyMiddleware *ProxyMiddleware
-	gatewayDatabase GatewayDatabase
+	common            service
+	staticJSPath      *string
+	app               *gin.Engine
+	root              *RootService
+	frontend          *FrontendService
+	service           *ServiceService
+	gateway           *GatewayService
+	route             *RouteService
+	proxyMiddleware   *ProxyMiddleware
+	gatewayRepository GatewayRepository
 }
 
 func (pkg *Server) Run(addr ...string) error {
@@ -97,6 +99,11 @@ func (pkg *Server) routes() {
 			{
 				serviceRoute.GET("/", pkg.service.listGET)
 				serviceRoute.GET("/all", pkg.service.listAllGET)
+			}
+
+			routeRoute := proxyRequired.Group("/route")
+			{
+				routeRoute.GET("/", pkg.route.listGET)
 			}
 		}
 	}

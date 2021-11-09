@@ -10,7 +10,7 @@ import (
 type GatewayService service
 
 func (server GatewayService) listGET(c *gin.Context) {
-	items, err := server.Server.gatewayDatabase.List(c.Request.Context())
+	items, err := server.Server.gatewayRepository.List(c.Request.Context())
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
@@ -28,7 +28,7 @@ func (server GatewayService) getGET(c *gin.Context) {
 		return
 	}
 
-	item, err := server.Server.gatewayDatabase.Get(c.Request.Context(), gatewayURI.ID)
+	item, err := server.Server.gatewayRepository.Get(c.Request.Context(), gatewayURI.ID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
@@ -45,7 +45,7 @@ func (server GatewayService) createPOST(c *gin.Context) {
 		return
 	}
 
-	result, err := server.Server.gatewayDatabase.Save(c.Request.Context(), item.Entity())
+	result, err := server.Server.gatewayRepository.Save(c.Request.Context(), item.Entity())
 	if err != nil {
 		log.Println("server.Server.gatewayDatabase.Save: ", err)
 		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})

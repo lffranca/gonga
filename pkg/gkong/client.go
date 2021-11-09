@@ -16,6 +16,7 @@ func New(baseURL *string, cli *http.Client) (*Client, error) {
 	client.common.client = client
 	client.kong = clientKong
 	client.Service = (*ServiceService)(&client.common)
+	client.Route = (*RouteService)(&client.common)
 
 	return client, nil
 }
@@ -29,4 +30,5 @@ type Client struct {
 	url     *url.URL
 	kong    *kong.Client
 	Service *ServiceService
+	Route   *RouteService
 }

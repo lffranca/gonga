@@ -17,7 +17,7 @@ func (pkg *ProxyMiddleware) validate(c *gin.Context) {
 		return
 	}
 
-	gateway, err := pkg.Server.gatewayDatabase.Get(c.Request.Context(), gatewayString.ID)
+	gateway, err := pkg.Server.gatewayRepository.Get(c.Request.Context(), gatewayString.ID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
