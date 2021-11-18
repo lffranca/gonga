@@ -97,7 +97,7 @@ function TableBase({entity, results, tableHeadComponent, tableItemsMap}) {
                             {tableHeadComponent}
                         </TableHead>
                         <TableBody>
-                            {items.map(tableItemsMap)}
+                            {items ? items.map(tableItemsMap) : null}
                             {offset ? (
                                 <TableRow
                                     key={`table-service-item-more`}
