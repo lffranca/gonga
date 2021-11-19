@@ -9,7 +9,12 @@ import (
 
 type RouteService service
 
-func (pkg *RouteService) List(ctx context.Context, size *int, offset *string, tags []*string, matchAllTags *bool) ([]*domain.Route, *domain.Option, error) {
+func (pkg *RouteService) List(ctx context.Context, gateway *domain.Gateway, size *int, offset *string, tags []*string, matchAllTags *bool) ([]*domain.Route, *domain.Option, error) {
+	kongClient, err := pkg.client.getClient(gateway)
+	if err != nil {
+		return nil, nil, err
+	}
+
 	options := &kong.ListOpt{}
 
 	if size != nil {
@@ -28,7 +33,7 @@ func (pkg *RouteService) List(ctx context.Context, size *int, offset *string, ta
 		options.MatchAllTags = *matchAllTags
 	}
 
-	items, resultOption, err := pkg.client.kong.Routes.List(ctx, options)
+	items, resultOption, err := kongClient.Routes.List(ctx, options)
 	if err != nil {
 		return nil, nil, err
 	}

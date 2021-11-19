@@ -11,13 +11,18 @@ import (
 type ServiceService service
 
 // Create creates an Service in Kong
-func (pkg *ServiceService) Create(ctx context.Context, service *domain.Service) (*domain.Service, error) {
+func (pkg *ServiceService) Create(ctx context.Context, gateway *domain.Gateway, service *domain.Service) (*domain.Service, error) {
+	kongClient, err := pkg.client.getClient(gateway)
+	if err != nil {
+		return nil, err
+	}
+
 	item := mapper.ServiceEntityToModel(service)
 	if item == nil {
 		return nil, errors.New("service param is required")
 	}
 
-	result, err := pkg.client.kong.Services.Create(ctx, item)
+	result, err := kongClient.Services.Create(ctx, item)
 	if err != nil {
 		return nil, err
 	}
@@ -26,8 +31,13 @@ func (pkg *ServiceService) Create(ctx context.Context, service *domain.Service) 
 }
 
 // Get fetches an Service in Kong.
-func (pkg *ServiceService) Get(ctx context.Context, nameOrID *string) (*domain.Service, error) {
-	item, err := pkg.client.kong.Services.Get(ctx, nameOrID)
+func (pkg *ServiceService) Get(ctx context.Context, gateway *domain.Gateway, nameOrID *string) (*domain.Service, error) {
+	kongClient, err := pkg.client.getClient(gateway)
+	if err != nil {
+		return nil, err
+	}
+
+	item, err := kongClient.Services.Get(ctx, nameOrID)
 	if err != nil {
 		return nil, err
 	}
@@ -36,8 +46,13 @@ func (pkg *ServiceService) Get(ctx context.Context, nameOrID *string) (*domain.S
 }
 
 // GetForRoute fetches a Service associated with routeID in Kong.
-func (pkg *ServiceService) GetForRoute(ctx context.Context, routeID *string) (*domain.Service, error) {
-	item, err := pkg.client.kong.Services.GetForRoute(ctx, routeID)
+func (pkg *ServiceService) GetForRoute(ctx context.Context, gateway *domain.Gateway, routeID *string) (*domain.Service, error) {
+	kongClient, err := pkg.client.getClient(gateway)
+	if err != nil {
+		return nil, err
+	}
+
+	item, err := kongClient.Services.GetForRoute(ctx, routeID)
 	if err != nil {
 		return nil, err
 	}
@@ -46,13 +61,18 @@ func (pkg *ServiceService) GetForRoute(ctx context.Context, routeID *string) (*d
 }
 
 // Update updates an Service in Kong
-func (pkg *ServiceService) Update(ctx context.Context, service *domain.Service) (*domain.Service, error) {
+func (pkg *ServiceService) Update(ctx context.Context, gateway *domain.Gateway, service *domain.Service) (*domain.Service, error) {
+	kongClient, err := pkg.client.getClient(gateway)
+	if err != nil {
+		return nil, err
+	}
+
 	item := mapper.ServiceEntityToModel(service)
 	if item == nil {
 		return nil, errors.New("service param is required")
 	}
 
-	result, err := pkg.client.kong.Services.Update(ctx, item)
+	result, err := kongClient.Services.Update(ctx, item)
 	if err != nil {
 		return nil, err
 	}
@@ -61,12 +81,22 @@ func (pkg *ServiceService) Update(ctx context.Context, service *domain.Service) 
 }
 
 // Delete deletes an Service in Kong
-func (pkg *ServiceService) Delete(ctx context.Context, nameOrID *string) error {
-	return pkg.client.kong.Services.Delete(ctx, nameOrID)
+func (pkg *ServiceService) Delete(ctx context.Context, gateway *domain.Gateway, nameOrID *string) error {
+	kongClient, err := pkg.client.getClient(gateway)
+	if err != nil {
+		return err
+	}
+
+	return kongClient.Services.Delete(ctx, nameOrID)
 }
 
 // List fetches a list of Services in Kong.
-func (pkg *ServiceService) List(ctx context.Context, size *int, offset *string, tags []*string, matchAllTags *bool) ([]*domain.Service, *domain.Option, error) {
+func (pkg *ServiceService) List(ctx context.Context, gateway *domain.Gateway, size *int, offset *string, tags []*string, matchAllTags *bool) ([]*domain.Service, *domain.Option, error) {
+	kongClient, err := pkg.client.getClient(gateway)
+	if err != nil {
+		return nil, nil, err
+	}
+
 	options := &kong.ListOpt{}
 
 	if size != nil {
@@ -85,7 +115,7 @@ func (pkg *ServiceService) List(ctx context.Context, size *int, offset *string, 
 		options.MatchAllTags = *matchAllTags
 	}
 
-	items, resultOption, err := pkg.client.kong.Services.List(ctx, options)
+	items, resultOption, err := kongClient.Services.List(ctx, options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -94,8 +124,13 @@ func (pkg *ServiceService) List(ctx context.Context, size *int, offset *string, 
 }
 
 // ListAll fetches all Services in Kong.
-func (pkg *ServiceService) ListAll(ctx context.Context) ([]*domain.Service, error) {
-	items, err := pkg.client.kong.Services.ListAll(ctx)
+func (pkg *ServiceService) ListAll(ctx context.Context, gateway *domain.Gateway) ([]*domain.Service, error) {
+	kongClient, err := pkg.client.getClient(gateway)
+	if err != nil {
+		return nil, err
+	}
+
+	items, err := kongClient.Services.ListAll(ctx)
 	if err != nil {
 		return nil, err
 	}

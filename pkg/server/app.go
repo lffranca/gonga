@@ -9,34 +9,35 @@ import (
 	"html/template"
 )
 
-func New(templatePath *string, staticJSPath *string, gatewayRepository GatewayRepository) (*Server, error) {
-	if templatePath == nil || staticJSPath == nil {
-		return nil, errors.New("required parameters not passed")
+func New(options *Options) (*Server, error) {
+	if options == nil {
+		return nil, errors.New("options param is required")
 	}
 
-	if gatewayRepository == nil {
-		return nil, errors.New("gateway database is required")
+	if err := options.validate(); err != nil {
+		return nil, err
 	}
 
 	server := new(Server)
 	server.common.Server = server
-	server.staticJSPath = staticJSPath
+	server.staticJSPath = options.StaticJSPath
 	server.root = (*RootService)(&server.common)
 	server.frontend = (*FrontendService)(&server.common)
 	server.service = (*ServiceService)(&server.common)
 	server.gateway = (*GatewayService)(&server.common)
 	server.route = (*RouteService)(&server.common)
-	server.proxyMiddleware = (*ProxyMiddleware)(&server.common)
-	server.gatewayRepository = gatewayRepository
+	server.gatewayRepository = options.GatewayRepository
+	server.serviceRepository = options.ServiceRepository
+	server.routeRepository = options.RouteRepository
 
 	server.app = gin.Default()
 
-	server.app.Static("/js", *staticJSPath)
+	server.app.Static("/js", *options.StaticJSPath)
 
 	temp := template.Must(
 		template.New("").
 			Funcs(function.New()).
-			ParseGlob(*templatePath))
+			ParseGlob(*options.TemplatePath))
 
 	server.app.SetHTMLTemplate(temp)
 
@@ -58,8 +59,9 @@ type Server struct {
 	service           *ServiceService
 	gateway           *GatewayService
 	route             *RouteService
-	proxyMiddleware   *ProxyMiddleware
 	gatewayRepository GatewayRepository
+	serviceRepository ServiceRepository
+	routeRepository   RouteRepository
 }
 
 func (pkg *Server) Run(addr ...string) error {
@@ -93,18 +95,14 @@ func (pkg *Server) routes() {
 			gatewayRoute.GET("/:gateway", pkg.gateway.getGET)
 		}
 
-		proxyRequired := v1.Group("", pkg.proxyMiddleware.validate)
+		serviceRoute := v1.Group("/service")
 		{
-			serviceRoute := proxyRequired.Group("/service")
-			{
-				serviceRoute.GET("/", pkg.service.listGET)
-				serviceRoute.GET("/all", pkg.service.listAllGET)
-			}
+			serviceRoute.GET("/", pkg.service.listGET)
+		}
 
-			routeRoute := proxyRequired.Group("/route")
-			{
-				routeRoute.GET("/", pkg.route.listGET)
-			}
+		routeRoute := v1.Group("/route")
+		{
+			routeRoute.GET("/", pkg.route.listGET)
 		}
 	}
 }

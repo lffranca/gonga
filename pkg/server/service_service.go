@@ -2,7 +2,6 @@ package server
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/lffranca/gonga/pkg/gkong"
 	"github.com/lffranca/gonga/pkg/server/presenter"
 	"log"
 	"net/http"
@@ -11,15 +10,20 @@ import (
 type ServiceService service
 
 func (server *ServiceService) listGET(c *gin.Context) {
-	proxy := c.MustGet("proxy").(*gkong.Client)
+	var gatewayString presenter.GatewayString
+	if err := c.ShouldBindQuery(&gatewayString); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
 
 	var optionQuery presenter.OptionQuery
 	if err := c.ShouldBindQuery(&optionQuery); err != nil {
 		log.Println("[WARNING] c.ShouldBindQuery(&optionQuery): ", err)
 	}
 
-	items, options, err := proxy.Service.List(
+	items, options, err := server.Server.serviceRepository.List(
 		c.Request.Context(),
+		gatewayString.ID,
 		optionQuery.Size,
 		optionQuery.Offset,
 		optionQuery.Tags,
@@ -34,17 +38,4 @@ func (server *ServiceService) listGET(c *gin.Context) {
 		"data":    items,
 		"options": options,
 	})
-}
-
-func (server *ServiceService) listAllGET(c *gin.Context) {
-	proxy := c.MustGet("proxy").(*gkong.Client)
-
-	items, err := proxy.Service.ListAll(c.Request.Context())
-	if err != nil {
-		log.Println("server.Server.proxy.Service.ListAll: ", err)
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, items)
 }

@@ -1,34 +1,34 @@
 package gkong
 
 import (
+	"errors"
 	"github.com/kong/go-kong/kong"
-	"net/http"
-	"net/url"
+	"github.com/lffranca/gonga/domain"
 )
 
-func New(baseURL *string, cli *http.Client) (*Client, error) {
-	clientKong, err := kong.NewClient(baseURL, cli)
-	if err != nil {
-		return nil, err
-	}
-
+func New() (*Client, error) {
 	client := new(Client)
 	client.common.client = client
-	client.kong = clientKong
 	client.Service = (*ServiceService)(&client.common)
 	client.Route = (*RouteService)(&client.common)
 
 	return client, nil
 }
 
-type service struct {
-	client *Client
-}
-
 type Client struct {
 	common  service
-	url     *url.URL
-	kong    *kong.Client
 	Service *ServiceService
 	Route   *RouteService
+}
+
+func (pkg *Client) getClient(gateway *domain.Gateway) (*kong.Client, error) {
+	if gateway == nil {
+		return nil, errors.New("gateway param is required")
+	}
+
+	return kong.NewClient(gateway.Host, nil)
+}
+
+type service struct {
+	client *Client
 }

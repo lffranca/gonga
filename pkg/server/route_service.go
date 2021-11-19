@@ -2,7 +2,6 @@ package server
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/lffranca/gonga/pkg/gkong"
 	"github.com/lffranca/gonga/pkg/server/presenter"
 	"log"
 	"net/http"
@@ -11,15 +10,20 @@ import (
 type RouteService service
 
 func (server *RouteService) listGET(c *gin.Context) {
-	proxy := c.MustGet("proxy").(*gkong.Client)
+	var gatewayString presenter.GatewayString
+	if err := c.ShouldBindQuery(&gatewayString); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
 
 	var optionQuery presenter.OptionQuery
 	if err := c.ShouldBindQuery(&optionQuery); err != nil {
 		log.Println("[WARNING] c.ShouldBindQuery(&optionQuery): ", err)
 	}
 
-	items, options, err := proxy.Route.List(
+	items, options, err := server.Server.routeRepository.List(
 		c.Request.Context(),
+		gatewayString.ID,
 		optionQuery.Size,
 		optionQuery.Offset,
 		optionQuery.Tags,
